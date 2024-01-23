@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The CyanogenMod project
+ * Copyright (C) 2017 AICP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +18,11 @@
 package com.everest.support.preferences;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.util.AttributeSet;
+import android.provider.Settings;
 
-import androidx.preference.SwitchPreferenceCompat;
+public class SecureSettingSwitchPreference extends SelfRemovingSwitchPreference {
 
-public class SecureSettingSwitchPreference extends SwitchPreferenceCompat {
     public SecureSettingSwitchPreference(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -36,30 +36,19 @@ public class SecureSettingSwitchPreference extends SwitchPreferenceCompat {
     }
 
     @Override
-    protected boolean persistBoolean(boolean value) {
-        if (shouldPersist()) {
-            if (value == getPersistedBoolean(!value)) {
-                // It's already there, so the same as persisting
-                return true;
-            }
-            Settings.Secure.putInt(getContext().getContentResolver(), getKey(), value ? 1 : 0);
-            return true;
-        }
-        return false;
+    protected boolean isPersisted() {
+        return Settings.Secure.getString(getContext().getContentResolver(), getKey()) != null;
     }
 
     @Override
-    protected boolean getPersistedBoolean(boolean defaultReturnValue) {
-        if (!shouldPersist()) {
-            return defaultReturnValue;
-        }
+    protected void putBoolean(String key, boolean value) {
+        Settings.Secure.putInt(getContext().getContentResolver(), key, value ? 1 : 0);
+    }
+
+    @Override
+    protected boolean getBoolean(String key, boolean defaultValue) {
         return Settings.Secure.getInt(getContext().getContentResolver(),
-                getKey(), defaultReturnValue ? 1 : 0) != 0;
+                key, defaultValue ? 1 : 0) != 0;
     }
 
-    @Override
-    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-        setChecked(Settings.Secure.getString(getContext().getContentResolver(), getKey()) != null ? getPersistedBoolean(isChecked())
-                : (Boolean) defaultValue);
-    }
 }
