@@ -26,7 +26,7 @@ import android.view.View;
 import androidx.core.content.res.TypedArrayUtils;
 import androidx.preference.R;
 
-public class SwitchPreference extends androidx.preference.SwitchPreference {
+public class SwitchPreference extends androidx.preference.SwitchPreferenceCompat {
 
     private final Context mContext;
     private final Vibrator mVibrator;
@@ -44,9 +44,7 @@ public class SwitchPreference extends androidx.preference.SwitchPreference {
     }
 
     public SwitchPreference(Context context, AttributeSet attrs) {
-        this(context, attrs, TypedArrayUtils.getAttr(context,
-                androidx.preference.R.attr.switchPreferenceStyle,
-                android.R.attr.switchPreferenceStyle));
+        this(context, attrs, androidx.preference.R.attr.switchPreferenceCompatStyle);
     }
 
     public SwitchPreference(Context context) {
